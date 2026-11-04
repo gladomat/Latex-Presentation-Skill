@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: german-colorful-howto
+expected_outcome: |
+  A compiled German deck using the colorful theme variant, about 6 content frames, explaining how to use the Swiss theme, including at least one minted code example, with no overflowing frames.
+context:
+  scaffold_script: place-files.sh

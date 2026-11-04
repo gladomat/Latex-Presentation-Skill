@@ -1,0 +1,105 @@
+% demo.tex — compile: latexmk -xelatex -shell-escape demo.tex   (or lualatex)
+\documentclass[aspectratio=169,t,11pt]{beamer}
+\usetheme[accent=E63312]{swiss}
+\usepackage{graphicx}
+\usepackage{mwe} % example-image-* placeholders only; remove in real decks
+
+\title{Engineering Update Q3}
+\subtitle{Platform reliability, delivery velocity and what comes next}
+\author{Jane Doe \textcolor{swissMuted}{·} Lead Engineer}
+\institute{TAE Group}
+\date{3 September 2026}
+% \titlegraphic{\includegraphics[height=0.9cm]{logo.pdf}}
+
+\begin{document}
+
+\begin{frame}[plain]\titlepage\end{frame}
+
+\begin{frame}{Agenda}
+  \tableofcontents
+\end{frame}
+
+\section{Where we are}
+
+\begin{frame}{Headline numbers}
+  \vskip 0.8cm
+  \kpi{99.97\%}{platform availability, up from 99.91\%}\hfill
+  \kpi{–47\%}{production incidents vs.\ Q2}\hfill
+  \kpi{12 min}{median lead time from merge to production}
+\end{frame}
+
+\begin{frame}{What changed this quarter}{Three things that mattered}
+  \begin{itemize}
+    \item Migrated the ingestion pipeline to event streaming
+    \item Introduced canary deployments for all customer-facing services
+    \item Consolidated observability into a single tracing backend
+      \begin{itemize}
+        \item Alert noise down 60\%; on-call pages halved
+      \end{itemize}
+    \item \alert{Open:} legacy scheduler still runs on the old cluster
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Architecture}{Before and after the streaming migration}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \begin{block}{Before}
+        Nightly batch jobs; failures discovered next morning; 6–8 h data latency.
+      \end{block}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{block}{After}
+        Continuous event stream; back-pressure and replay built in; sub-minute latency.
+      \end{block}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Target architecture}{One figure per frame; height capped so the frame title still fits}
+  \centering\includegraphics[height=3.5cm,width=\textwidth,keepaspectratio]{example-image-a}
+\end{frame}
+
+\begin{frame}{Service health}
+  \begin{table}
+    \begin{tabular}{@{}lrrrl@{}}
+      \toprule
+      \thead{Service} & \thead{Availability} & \thead{p95 latency} & \thead{Incidents} & \thead{Status} \\
+      \midrule
+      API gateway     & 99.99\% & 84 ms  & 0 & \textcolor{swissMuted}{stable} \\
+      Ingestion       & 99.96\% & 210 ms & 2 & \textcolor{swissMuted}{stable} \\
+      Scheduler       & 99.80\% & 620 ms & 5 & \alert{migrating} \\
+      \bottomrule
+    \end{tabular}
+    \caption{30-day rolling window, production only}
+  \end{table}
+\end{frame}
+
+\begin{frame}{Deployments per week}
+  \begin{tikzpicture}
+    \begin{axis}[swissbar,height=0.55\textheight,symbolic x coords={Jul 1,Jul 15,Aug 1,Aug 15,Sep 1},xtick=data,ymin=0]
+      \addplot coordinates {(Jul 1,14) (Jul 15,19) (Aug 1,27) (Aug 15,31) (Sep 1,38)};
+    \end{axis}
+  \end{tikzpicture}
+\end{frame}
+
+\section{Next quarter}
+
+\begin{frame}[fragile]{Canary rollout policy}{Declarative, reviewed like any other change}
+\begin{minted}{yaml}
+rollout:
+  steps:
+    - weight: 5     # 5% of traffic
+      pause: 10m
+    - weight: 25
+      pause: 30m
+    - weight: 100
+\end{minted}
+\end{frame}
+
+\fullbleed[New data-centre hall, Frankfurt — commissioning in October]{example-image-b}
+
+\statement{Every customer-facing service on canary deploys by the end of Q4.}
+
+\closingframe{Thank you}{Jane Doe \\ jane.doe@taegroup.de \\ +49 000 000 000}
+
+\end{document}

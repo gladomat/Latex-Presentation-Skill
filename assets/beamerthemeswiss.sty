@@ -1,0 +1,292 @@
+% beamerthemeswiss.sty — Swiss modern minimal Beamer theme
+% Usage:  \documentclass[aspectratio=169,t,11pt]{beamer}
+%         \usetheme[accent=E63312]{swiss}
+% Compile with XeLaTeX or LuaLaTeX (fontspec). minted needs -shell-escape.
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{beamerthemeswiss}[2026/09/03 v1.0 Swiss minimal Beamer theme]
+\mode<presentation>
+
+\RequirePackage{fontspec}
+\RequirePackage{xcolor}
+\RequirePackage{tikz}
+\RequirePackage{pgfplots}
+\RequirePackage{booktabs}
+\RequirePackage{colortbl}
+\RequirePackage{minted}
+
+% ---------------------------------------------------------------- options
+\def\swiss@accent{E63312}
+\DeclareOptionBeamer{accent}{\def\swiss@accent{#1}}
+\newif\ifswiss@colorful
+\DeclareOptionBeamer{colorful}{\swiss@colorfultrue}
+\ProcessOptionsBeamer
+
+% ---------------------------------------------------------------- colors
+\definecolor{swissPaper}{HTML}{F7F6F2}
+\definecolor{swissInk}{HTML}{141414}
+\definecolor{swissMuted}{HTML}{6F6E6A}
+\definecolor{swissRule}{HTML}{D8D6CF}
+\definecolor{swissCodeBg}{HTML}{EEEDE8}
+\edef\swiss@tmp{\noexpand\definecolor{swissAccent}{HTML}{\swiss@accent}}\swiss@tmp
+% colorful palette (used with the [colorful] option; always available as colors)
+\definecolor{swissBlue}{HTML}{3A86FF}
+\definecolor{swissPink}{HTML}{FF006E}
+\definecolor{swissYellow}{HTML}{FFBE0B}
+\definecolor{swissPurple}{HTML}{8338EC}
+\definecolor{swissOrange}{HTML}{FB5607}
+\colorlet{swissRed}{swissPink}
+\ifswiss@colorful\colorlet{swissAccent}{swissBlue}\fi
+
+% ---------------------------------------------------------------- fonts
+\IfFontExistsTF{Helvetica Neue}{%
+  \setsansfont{Helvetica Neue}[UprightFont=* Light,BoldFont=* Medium,ItalicFont=* Light Italic,BoldItalicFont=* Medium Italic]%
+  \newfontfamily\swissdisplay{Helvetica Neue}[UprightFont=* Medium,BoldFont=* Bold]%
+  \newfontfamily\swisslight{Helvetica Neue}[UprightFont=* UltraLight]%
+}{%
+  \IfFontExistsTF{Helvetica}{%
+    \setsansfont{Helvetica}[UprightFont=* Light,BoldFont=* Bold]%
+    \newfontfamily\swissdisplay{Helvetica}[UprightFont=* Bold]%
+    \newfontfamily\swisslight{Helvetica}[UprightFont=* Light]%
+  }{%
+    \setsansfont{TeX Gyre Heros}%
+    \newfontfamily\swissdisplay{TeX Gyre Heros}[UprightFont=* Bold]%
+    \newfontfamily\swisslight{TeX Gyre Heros}%
+  }%
+}
+\IfFontExistsTF{SF Mono}{\setmonofont{SF Mono}[Scale=MatchLowercase]}{%
+  \IfFontExistsTF{Menlo}{\setmonofont{Menlo}[Scale=MatchLowercase]}{%
+    \setmonofont{DejaVu Sans Mono}[Scale=MatchLowercase]}}
+
+% ---------------------------------------------------------------- geometry
+\setbeamersize{text margin left=1.6cm,text margin right=1.6cm}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{headline}{}
+\setlength{\parskip}{0.4em}
+\newcommand{\swiss@fill}{\vskip0pt plus 1filll}
+\newcommand{\swissrule}{{\color{swissAccent}\rule{1.4cm}{3pt}}}
+% five colour blocks — used on title/closing pages in colorful mode; \swissblocks{size}
+\newcommand{\swissblocks}[1]{\hbox{{\color{swissBlue}\rule{#1}{#1}}\hskip0.15cm{\color{swissPink}\rule{#1}{#1}}\hskip0.15cm{\color{swissYellow}\rule{#1}{#1}}\hskip0.15cm{\color{swissPurple}\rule{#1}{#1}}\hskip0.15cm{\color{swissOrange}\rule{#1}{#1}}}}
+\newcommand{\swissmark}{\ifswiss@colorful\swissblocks{0.5cm}\else\swissrule\fi}
+% section colour cycle: blue, pink, yellow, purple, orange (text ink on yellow, paper otherwise)
+\newcommand{\swiss@setsectioncolor}{%
+  \ifcase\numexpr(\insertsectionnumber+4)-((2*\insertsectionnumber+3)/10)*5\relax
+    \colorlet{swiss@secbg}{swissBlue}\colorlet{swiss@secfg}{swissPaper}\or
+    \colorlet{swiss@secbg}{swissPink}\colorlet{swiss@secfg}{swissPaper}\or
+    \colorlet{swiss@secbg}{swissYellow}\colorlet{swiss@secfg}{swissInk}\or
+    \colorlet{swiss@secbg}{swissPurple}\colorlet{swiss@secfg}{swissPaper}\else
+    \colorlet{swiss@secbg}{swissOrange}\colorlet{swiss@secfg}{swissPaper}\fi
+  \ifswiss@colorful\colorlet{swissAccent}{swiss@secbg}\fi}
+
+% ---------------------------------------------------------------- beamer colors
+\setbeamercolor{normal text}{fg=swissInk,bg=swissPaper}
+\setbeamercolor{structure}{fg=swissInk}
+\setbeamercolor{alerted text}{fg=swissAccent}
+\setbeamercolor{example text}{fg=swissMuted}
+\setbeamercolor{title}{fg=swissInk}
+\setbeamercolor{subtitle}{fg=swissMuted}
+\setbeamercolor{author}{fg=swissInk}
+\setbeamercolor{institute}{fg=swissMuted}
+\setbeamercolor{date}{fg=swissMuted}
+\setbeamercolor{frametitle}{fg=swissInk}
+\setbeamercolor{framesubtitle}{fg=swissMuted}
+\setbeamercolor{footline}{fg=swissMuted}
+\setbeamercolor{itemize item}{fg=swissAccent}
+\setbeamercolor{itemize subitem}{fg=swissMuted}
+\setbeamercolor{enumerate item}{fg=swissAccent}
+\setbeamercolor{enumerate subitem}{fg=swissMuted}
+\setbeamercolor{caption name}{fg=swissMuted}
+\setbeamercolor{caption}{fg=swissMuted}
+\setbeamercolor{block title}{fg=swissInk,bg=}
+\setbeamercolor{block body}{fg=swissInk,bg=}
+\setbeamercolor{section in toc}{fg=swissInk}
+\setbeamercolor{swiss section number}{fg=swissAccent}
+\setbeamercolor{swiss kpi}{fg=swissAccent}
+
+% ---------------------------------------------------------------- beamer fonts
+\setbeamerfont{title}{family=\swissdisplay,size=\fontsize{30}{34}}
+\setbeamerfont{subtitle}{size=\fontsize{14}{18}}
+\setbeamerfont{author}{family=\swissdisplay,size=\fontsize{11}{14}}
+\setbeamerfont{institute}{size=\fontsize{10}{13}}
+\setbeamerfont{date}{size=\fontsize{10}{13}}
+\setbeamerfont{frametitle}{family=\swissdisplay,size=\fontsize{20}{24}}
+\setbeamerfont{framesubtitle}{size=\fontsize{11}{14}}
+\setbeamerfont{footline}{family=\swissdisplay,size=\fontsize{8}{10}}
+\setbeamerfont{block title}{family=\swissdisplay,size=\normalsize}
+\setbeamerfont{caption}{size=\footnotesize}
+\setbeamerfont{section in toc}{family=\swissdisplay,size=\fontsize{14}{20}}
+\setbeamerfont{swiss section number}{family=\swissdisplay,size=\fontsize{72}{72}}
+\setbeamerfont{swiss section title}{family=\swissdisplay,size=\fontsize{26}{30}}
+\setbeamerfont{swiss kpi}{family=\swissdisplay,size=\fontsize{30}{34}}
+\setbeamerfont{swiss kpi label}{size=\fontsize{10}{13}}
+\setbeamerfont{swiss contact}{size=\fontsize{11}{15}}
+
+% ---------------------------------------------------------------- title page
+\setbeamertemplate{title page}{%
+  \vspace*{1.0cm}%
+  \swissmark\par
+  \vskip 1.6cm
+  {\usebeamerfont{title}\usebeamercolor[fg]{title}\raggedright\inserttitle\par}%
+  \vskip 0.5cm
+  {\usebeamerfont{subtitle}\usebeamercolor[fg]{subtitle}\raggedright\insertsubtitle\par}%
+  \swiss@fill
+  \begin{minipage}[b]{0.62\textwidth}\raggedright
+    {\usebeamerfont{author}\usebeamercolor[fg]{author}\insertauthor\par}%
+    \vskip 0.15em
+    {\usebeamerfont{institute}\usebeamercolor[fg]{institute}\insertinstitute\par}%
+    \vskip 0.15em
+    {\usebeamerfont{date}\usebeamercolor[fg]{date}\insertdate\par}%
+  \end{minipage}\hfill
+  \begin{minipage}[b]{0.3\textwidth}\raggedleft\inserttitlegraphic\end{minipage}%
+  \vskip 0.6cm
+}
+
+% ---------------------------------------------------------------- section page
+\setbeamertemplate{section page}{%
+  \vspace*{0.6cm}%
+  {\usebeamerfont{swiss section number}\usebeamercolor[fg]{swiss section number}%
+   \two@digits{\insertsectionnumber}\par}%
+  \swiss@fill
+  \swissrule\par
+  \vskip 0.6cm
+  {\usebeamerfont{swiss section title}\raggedright\insertsectionhead\par}%
+  \vskip 0.8cm
+}
+\AtBeginSection[]{\swiss@setsectioncolor
+  \ifswiss@colorful
+    {\setbeamercolor{background canvas}{bg=swiss@secbg}%
+     \setbeamercolor{normal text}{fg=swiss@secfg}%
+     \setbeamercolor{swiss section number}{fg=swiss@secfg}%
+     \setbeamercolor{footline}{fg=swiss@secfg}%
+     \colorlet{swissRule}{swiss@secfg}\colorlet{swissAccent}{swiss@secfg}%
+     \begin{frame}\usebeamercolor[fg]{normal text}\sectionpage\end{frame}}%
+    \colorlet{swissRule}{swiss@rulesaved}\colorlet{swissAccent}{swiss@secbg}%
+  \else
+    \begin{frame}\sectionpage\end{frame}%
+  \fi}
+\colorlet{swiss@rulesaved}{swissRule}
+
+% ---------------------------------------------------------------- frame title
+\setbeamertemplate{frametitle}{%
+  \vspace*{0.9cm}%
+  \swissrule\par
+  \vskip 0.45cm
+  {\usebeamerfont{frametitle}\usebeamercolor[fg]{frametitle}\raggedright\insertframetitle\par}%
+  \ifx\insertframesubtitle\@empty\else
+    \vskip 0.25em
+    {\usebeamerfont{framesubtitle}\usebeamercolor[fg]{framesubtitle}\raggedright\insertframesubtitle\par}%
+  \fi
+  \vskip 0.5cm
+}
+
+% ---------------------------------------------------------------- footline: number + progress bar
+\newlength{\swiss@progress}
+\setbeamertemplate{footline}{%
+  \pgfmathsetlength{\swiss@progress}{\paperwidth*\insertframenumber/\inserttotalframenumber}%
+  \vbox{%
+    \hbox to \paperwidth{\hfil{\usebeamerfont{footline}\usebeamercolor[fg]{footline}\insertframenumber}\hskip 1.6cm}%
+    \vskip 0.45cm
+    \hbox to \paperwidth{{\color{swissRule}\rule{\paperwidth}{1.5pt}}\hskip-\paperwidth{\color{swissAccent}\rule{\swiss@progress}{1.5pt}}\hfil}%
+  }%
+}
+
+% ---------------------------------------------------------------- lists, toc, blocks, captions
+\setbeamertemplate{itemize item}{\rule[0.3ex]{0.45em}{0.45em}}
+\setbeamertemplate{itemize subitem}{\rule[0.5ex]{0.45em}{1pt}}
+\setbeamertemplate{itemize subsubitem}{\rule[0.5ex]{0.3em}{1pt}}
+\setbeamertemplate{enumerate item}{\swissdisplay\insertenumlabel}
+\setbeamertemplate{enumerate subitem}{\swissdisplay\insertenumlabel.\insertsubenumlabel}
+\setlength{\leftmargini}{1.2em}
+\setlength{\leftmarginii}{1.2em}
+\setbeamertemplate{itemize/enumerate body begin}{\setlength{\itemsep}{0.45em}}
+
+\setbeamertemplate{section in toc}{%
+  \leavevmode\hbox to 2.2em{\usebeamercolor[fg]{swiss section number}\two@digits{\inserttocsectionnumber}\hfil}%
+  \inserttocsection\par\vskip 0.75em}
+\setbeamertemplate{subsection in toc}{}
+
+\setbeamertemplate{block begin}{%
+  \par\vskip 0.5em
+  {\usebeamerfont{block title}\usebeamercolor[fg]{block title}\insertblocktitle\par}%
+  \vskip 0.25em{\color{swissRule}\rule{\textwidth}{0.6pt}}\par\vskip 0.4em
+  \usebeamerfont{block body}\usebeamercolor[fg]{block body}}
+\setbeamertemplate{block end}{\par\vskip 0.5em}
+\setbeamertemplate{block alerted begin}{\usebeamertemplate{block begin}}
+\setbeamertemplate{block alerted end}{\usebeamertemplate{block end}}
+\setbeamertemplate{block example begin}{\usebeamertemplate{block begin}}
+\setbeamertemplate{block example end}{\usebeamertemplate{block end}}
+
+\setbeamertemplate{caption}{\usebeamerfont{caption}\usebeamercolor[fg]{caption}\insertcaption\par}
+
+% ---------------------------------------------------------------- tables
+\renewcommand{\arraystretch}{1.35}
+\setlength{\tabcolsep}{0.9em}
+\newcommand{\thead}[1]{{\swissdisplay\footnotesize\color{swissMuted}#1}}
+\setlength{\heavyrulewidth}{0.9pt}
+\setlength{\lightrulewidth}{0.5pt}
+\arrayrulecolor{swissInk}
+
+% ---------------------------------------------------------------- code (minted)
+\setminted{fontsize=\footnotesize,breaklines,autogobble,tabsize=2,
+  bgcolor=swissCodeBg,frame=none,framesep=3mm,baselinestretch=1.15}
+\usemintedstyle{friendly}
+
+% ---------------------------------------------------------------- charts (pgfplots)
+\pgfplotsset{compat=1.18,
+  swiss/.style={
+    width=\textwidth,height=0.62\textheight,
+    axis lines=left,axis line style={swissRule,thin},
+    tick style={draw=none},
+    ticklabel style={swissMuted,font=\footnotesize},
+    label style={swissMuted,font=\footnotesize},
+    ymajorgrids,grid style={swissRule,thin},
+    every axis plot/.append style={line width=1.4pt},
+    cycle list={swissAccent,swissInk,swissMuted},
+    legend style={draw=none,fill=none,font=\footnotesize,text=swissMuted},
+    legend cell align=left,
+  },
+  swissbar/.style={swiss,ybar,bar width=14pt,every axis plot/.append style={draw=none,fill=swissAccent}},
+}
+\ifswiss@colorful\pgfplotsset{swiss/.append style={cycle list={swissBlue,swissPink,swissYellow,swissPurple,swissOrange}}}\fi
+
+% ---------------------------------------------------------------- helpers
+% \kpi[color]{47\%}{fewer production incidents}   (use inside columns or side by side)
+\newcommand{\kpi}[3][swissAccent]{%
+  \begin{minipage}[t]{0.29\textwidth}\raggedright
+    {\usebeamerfont{swiss kpi}\color{#1}#2\par}%
+    \vskip 0.35em{\color{swissRule}\rule{2em}{1pt}}\par\vskip 0.35em
+    {\usebeamerfont{swiss kpi label}\color{swissMuted}#3\par}%
+  \end{minipage}}
+
+% \fullbleed[caption]{image}   full-page image frame
+\newcommand{\fullbleed}[2][]{%
+  \begin{frame}[plain]
+    \begin{tikzpicture}[remember picture,overlay]
+      \node[inner sep=0,anchor=center] at (current page.center)
+        {\includegraphics[width=\paperwidth,height=\paperheight]{#2}};
+      \ifx\relax#1\relax\else
+        \node[anchor=south west,fill=swissPaper,text=swissInk,inner sep=7pt,font=\footnotesize]
+          at ([xshift=1.6cm,yshift=1.1cm]current page.south west){#1};
+      \fi
+    \end{tikzpicture}
+  \end{frame}}
+
+% \statement{Big centered-left sentence}   single-thought slide
+\newcommand{\statement}[1]{%
+  \begin{frame}[plain]
+    \vspace*{1.0cm}\swissrule\par\swiss@fill
+    {\usebeamerfont{swiss section title}\raggedright #1\par}\swiss@fill
+  \end{frame}}
+
+% \closingframe{Thank you}{name \\ email \\ phone}
+\newcommand{\closingframe}[2]{%
+  \begin{frame}[plain]
+    \vspace*{1.0cm}\swissmark\par
+    \vskip 1.6cm
+    {\usebeamerfont{title}\raggedright #1\par}%
+    \swiss@fill
+    \begin{minipage}[b]{0.62\textwidth}\raggedright\usebeamerfont{swiss contact}\color{swissMuted}#2\end{minipage}\hfill
+    \begin{minipage}[b]{0.3\textwidth}\raggedleft\inserttitlegraphic\end{minipage}%
+    \vskip 0.6cm
+  \end{frame}}
+
+\mode<all>

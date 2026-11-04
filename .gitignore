@@ -1,0 +1,18 @@
+# Test cases built on client data — kept local only
+evals/stakeholder-update/
+evals/tsv-only-no-prompt/
+
+# LaTeX build artefacts
+*.aux
+*.log
+*.nav
+*.out
+*.snm
+*.toc
+*.vrb
+*.fls
+*.fdb_latexmk
+*.xdv
+_minted*/
+previews/
+.DS_Store
